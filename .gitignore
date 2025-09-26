@@ -38,6 +38,5 @@
 # End of https://www.toptal.com/developers/gitignore/api/c++
 
 # Skip SFML folder from pushing into repo ("git submodule add https://github.com/SFML/SFML.git" didn't work)
-/lib/SFML
 /out
 /.vs
