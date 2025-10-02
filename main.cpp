@@ -1,5 +1,8 @@
+#include <iostream>
 #include <sstream>
 #include <SFML/Graphics.hpp>
+sf::Texture spritesheet;
+sf::Sprite invader;
 
 const float time_step = 0.017f; //60 fps
 const int game_width = 800;
@@ -7,6 +10,11 @@ const int game_height = 600;
 
 void init() {
     // Initialise game
+    if (!spritesheet.loadFromFile("./Debug/res/img/invaders_sheet.png")) {
+        std::cerr << "Failed to load spritesheet!" << std::endl;
+    }
+    invader.setTexture(spritesheet);
+    invader.setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(32, 32)));
 }
 
 void update(float dt) {
@@ -15,6 +23,7 @@ void update(float dt) {
 
 void render(sf::RenderWindow& window) {
     // Render window
+    window.draw(invader);
 }
 
 int main() {
