@@ -10,7 +10,7 @@ void GameSystem::init() {
     }
 
 	for (int i = 1; i <= Parameters::invaders_count; ++i) {
-		std::shared_ptr<Invader> inv = std::make_shared<Invader>(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(32, 32)), sf::Vector2f(i*100, 100));
+		std::shared_ptr<Invader> inv = std::make_shared<Invader>(sf::IntRect(sf::Vector2i(i % 2  == 0 ? Parameters::sprite_size : 0, 0), sf::Vector2i(Parameters::sprite_size, Parameters::sprite_size)), sf::Vector2f(i*100, 100));
 		ships.push_back(inv); // This is when the copy constructor is called
 	}
 }
