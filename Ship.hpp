@@ -13,8 +13,11 @@ public:
     virtual void move_down();
     // Update, virtual so can be overridden, but not pure virtual
     virtual void update(const float& dt);
+    bool is_exploded() const;
+    virtual void explode();
 protected:
     sf::IntRect _sprite;
+    bool _exploded = false;
 };
 
 class Invader : public Ship {

@@ -16,7 +16,7 @@ set(SFML_INCS "lib/SFML/include")
 link_directories("${CMAKE_BINARY_DIR}/lib/SFML/lib")
 
 #### Practical 03 ####
-add_executable(lab_03 main.cpp Ship.cpp game_system.cpp)
+add_executable(lab_03 main.cpp Ship.cpp game_system.cpp "Bullet.cpp")
 target_include_directories(lab_03 PRIVATE ${SFML_INCS})
 target_link_libraries(lab_03 sfml-graphics)
 

@@ -1,5 +1,6 @@
 #include "game_system.hpp"
 #include "game_parameters.hpp"
+#include "Bullet.hpp"
 
 using param = Parameters;
 using gs = GameSystem;
@@ -16,13 +17,6 @@ void GameSystem::init() {
         std::cerr << "Failed to load spritesheet!" << std::endl;
     }
 
-	/*
-	for (int i = 1; i <= param::invaders_cols; ++i) {
-		std::shared_ptr<Invader> inv = std::make_shared<Invader>(sf::IntRect(sf::Vector2i(i % 2  == 0 ? param::sprite_size : 0, 0), sf::Vector2i(param::sprite_size, param::sprite_size)), sf::Vector2f(i*100, 100));
-		ships.push_back(inv); // This is when the copy constructor is called
-	}
-	*/
-
 	gs::reset();
 
 	std::shared_ptr<Player> player = std::make_shared<Player>();
@@ -37,18 +31,21 @@ void GameSystem::init() {
 		}
 	}
 
+	Bullet::init();
 }
 
 void GameSystem::update(const float& dt) {
 	for (std::shared_ptr<Ship>& s : ships) {
 		s->update(dt);
 	}
+	Bullet::update(dt);
 }
 
 void GameSystem::render(sf::RenderWindow& window) {
 	for (const std::shared_ptr<Ship>& s : ships) {
 		window.draw(*(s.get()));
 	}
+	Bullet::render(window);
 }
 
 void GameSystem::clean() {

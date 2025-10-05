@@ -10,11 +10,13 @@ struct Parameters {
     static constexpr int invaders_step = 20;
     static constexpr int invaders_speedup = 10;
     static constexpr int p_speed = 100;
+    static constexpr int bullet_speed = 200;
 
     static constexpr float time_step = 0.017f; // 60 fps /* moved from main */
 
-    static constexpr sf::Keyboard::Key controls[2] = {
+    static constexpr sf::Keyboard::Key controls[3] = {
         sf::Keyboard::Left,
-        sf::Keyboard::Right
+        sf::Keyboard::Right,
+        sf::Keyboard::Space
     };
 };
