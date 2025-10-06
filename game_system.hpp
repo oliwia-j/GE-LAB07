@@ -1,17 +1,20 @@
 #pragma once
 #include <iostream>
-#include <vector>
-#include <memory>
 #include <SFML/Graphics.hpp>
 
-struct GameSystem {
-    // Global variables
-    static sf::Texture spritesheet;
+class Scene; //forward definition
 
-    // Game system functions
-    static void init();
-    static void reset();
-    static void update(const float& dt);
-    static void render(sf::RenderWindow& window);
+class GameSystem {
+public:
+    static void start(unsigned int width, unsigned int height,
+        const std::string& name, const float& time_step);
     static void clean();
+    static void reset();
+
+private:
+    GameSystem() = delete;
+    static void _init();
+    static void _update(const float& dt);
+    static void _render(sf::RenderWindow& window);
+    static Scene* _active_scene;
 };
