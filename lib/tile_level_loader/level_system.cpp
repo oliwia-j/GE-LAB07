@@ -47,7 +47,9 @@ void LevelSystem::load_level(const string& path, float tile_size) {
     else {
         throw string("Couldn't open level file: ") + path;
     }
-    int x = 0;
+    int col = 0;
+
+    Vector2f tile_pos = {0,0};
 
     vector<Tile> temp_tiles;
     for (int i = 0; i < buffer.size(); ++i) {
@@ -58,7 +60,8 @@ void LevelSystem::load_level(const string& path, float tile_size) {
             break;
         case 's':
             temp_tiles.push_back(START);
-            _start_position = get_tile_position({ x,h });
+            tile_pos = get_tile_position({ col,h });
+            _start_position = { tile_pos.x - _tile_size/2, tile_pos.y + _tile_size/2 };
             break;
         case 'e':
             temp_tiles.push_back(END);
@@ -76,14 +79,15 @@ void LevelSystem::load_level(const string& path, float tile_size) {
             if (w == 0) { // if we haven't written width yet
                 w = i;      // set width
             }
-            x = 0;
+            col = 0;
             h++; // increment height
             break;
         default:
-            cout << "here" << c << endl; // Don't know what this tile type is
+            cout << c << endl; // Don't know what this tile type is
         }
-        x++;
+        col++;
     }
+    std::cout << "Tiles read: " << temp_tiles.size() << ", Expected: " << (w * h) << " (" << w << "x" << h << ")" << std::endl;
     if (temp_tiles.size() != (w * h)) {
         throw string("Can't parse level file") + path;
     }
