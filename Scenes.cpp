@@ -6,9 +6,13 @@ using param = Parameters;
 
 std::shared_ptr<Scene> Scenes::maze;
 
-void MazeScene::update(const float& dt) {}
+void MazeScene::update(const float& dt) {
+    Scene::update(dt);
+}
 
-void MazeScene::render(sf::RenderWindow& window) {}
+void MazeScene::render(sf::RenderWindow& window) {
+    Scene::render(window);
+}
 
 void MazeScene::load() {
     std::shared_ptr<Entity> player = std::make_shared<Player>();

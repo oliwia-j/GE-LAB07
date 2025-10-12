@@ -14,24 +14,26 @@ Player::Player()
 
 void Player::update(const float& dt) {
     // Move in four directions based on keys
+
     // Move Left
     if (sf::Keyboard::isKeyPressed(param::controls[0]) &&
-        get_position().x > _radius * 2 / 2.f) {
+        get_position().x > _radius) {
         move({ dt * -1 * _speed, 0.0f });
     }
     // Move Right
     if (sf::Keyboard::isKeyPressed(param::controls[1]) &&
-        get_position().x < param::game_width - _radius*2 / 2.f) {
+        get_position().x < param::game_width - _radius) {
         move({ dt * _speed, 0.0f });
     }
     // Move Up
     if (sf::Keyboard::isKeyPressed(param::controls[2]) &&
-        get_position().y < -(_radius * 2) / 2.f) {
+        get_position().y > _radius) {
         move({ 0.0f, dt * -1 * _speed });
     }
     // Move Down
     if (sf::Keyboard::isKeyPressed(param::controls[3]) &&
-        get_position().y > -(param::game_height - _radius * 2) / 2.f) {
+        get_position().y < param::game_height - _radius) {
+        
         move({ 0.0f, dt * _speed });
     }
     Entity::update(dt);

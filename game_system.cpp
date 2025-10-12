@@ -64,7 +64,6 @@ void Scene::update(const float &dt) {
 }
 
 void Scene::render(sf::RenderWindow& window) {
-    std::cout << "Hello from SFML game!" << std::endl;
     for (std::shared_ptr<Entity>& ent : _entities) {
         ent->render(window);
     }

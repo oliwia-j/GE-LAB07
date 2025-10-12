@@ -9,6 +9,6 @@ public:
 	void render(sf::RenderWindow& window) const override;
 
 private:
-	static constexpr float _radius = 250.f;
+	static constexpr float _radius = 25.f;
 	static constexpr float _speed = 200.f;
 };
