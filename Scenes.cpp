@@ -1,6 +1,9 @@
 #include "Scenes.hpp"
 #include "Player.hpp"
 #include "game_parameters.hpp"
+#include "level_system.hpp"
+
+using ls = LevelSystem;
 
 using param = Parameters;
 
@@ -11,6 +14,7 @@ void MazeScene::update(const float& dt) {
 }
 
 void MazeScene::render(sf::RenderWindow& window) {
+    ls::render(window);
     Scene::render(window);
 }
 
@@ -20,6 +24,14 @@ void MazeScene::load() {
     reset();
 }
 void MazeScene::reset() {
+    ls::load_level(_file_path);
+    for (int y = 0; y < ls::get_height(); ++y) {
+        for (int x = 0; x < ls::get_width(); ++x) {
+            std::cout << ls::get_tile({ x, y });
+        }
+        std::cout << std::endl;
+    }
+
     _entities[0]->set_position({param::game_width / 2, param::game_height / 2 });
 }
 

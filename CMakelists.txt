@@ -14,11 +14,15 @@ SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIRECTORY})
 add_subdirectory("lib/SFML")
 set(SFML_INCS "lib/SFML/include")
 link_directories("${CMAKE_BINARY_DIR}/lib/SFML/lib")
+#### level system ####
+add_library(tile_level STATIC "lib/tile_level_loader/level_system.cpp")
+target_include_directories(tile_level INTERFACE "lib/tile_level_loader")
+target_link_libraries(tile_level sfml-graphics)
 
 #### Practical 04 ####
 add_executable(lab_04 main.cpp game_system.cpp Entity.cpp Player.cpp Scenes.cpp)
 target_include_directories(lab_04 PRIVATE ${SFML_INCS})
-target_link_libraries(lab_04 sfml-graphics)
+target_link_libraries(lab_04 sfml-graphics tile_level)
 
 set_target_properties(lab_04 
     PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY
