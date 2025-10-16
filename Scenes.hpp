@@ -3,28 +3,31 @@
 #include "game_system.hpp"
 
 struct Scenes {
-	static std::shared_ptr<Scene> maze;
-	static std::shared_ptr<Scene> end;
+	static std::shared_ptr<Scene> menu;
+	static std::shared_ptr<Scene> game;
 };
 
-class MazeScene : public Scene {
-public:
-	MazeScene() = default;
-	void update(const float& dt) override;
-	void render(sf::RenderWindow& window) override;
-	void load() override;
-	void reset();
-	void set_file_path(const std::string& file_path);
+class MenuScene : public Scene {
 private:
-	std::string _file_path;
-};
-
-class EndScene : public Scene {
-public:
-	EndScene() = default;
-	void load() override;
-	void render(sf::RenderWindow& window) override;
-private:
-	sf::Text win_text;
+	sf::Text text;
 	sf::Font font;
+
+public:
+	MenuScene() = default;
+	void update(const float& dt) override;
+	void render() override;
+	void load()override;
+};
+
+class GameScene : public Scene {
+private:
+	sf::Text text;
+	sf::Clock scoreClock;
+	void respawn();
+
+public:
+	GameScene() = default;
+	void update(const float& dt) override;
+	void render() override;
+	void load() override;
 };

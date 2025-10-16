@@ -2,12 +2,11 @@
 #include "Entity.hpp"
 #include <iostream>
 
-class Player : public Entity {
+class Ghost : public Entity {
 public:
-	Player();
+	Ghost();
 	void update(const float& dt) override;
 	void render() const override;
-	bool valid_move(sf::Vector2f pos);
 
 private:
 	static constexpr float _radius = 25.f;

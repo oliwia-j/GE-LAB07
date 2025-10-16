@@ -3,7 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include "Entity.hpp"
 
-class Scene; //forward definition
+class Scene; // forward definition
 
 class GameSystem {
 public:
@@ -17,7 +17,7 @@ private:
     GameSystem() = delete;
     static void _init();
     static void _update(const float& dt);
-    static void _render(sf::RenderWindow& window);
+    static void _render();
     static std::shared_ptr<Scene> _active_scene;
 };
 
@@ -27,11 +27,11 @@ public:
 
     virtual ~Scene() = default;
     virtual void update(const float& dt);
-    virtual void render(sf::RenderWindow& window);
+    virtual void render();
     virtual void load() = 0;
     virtual void unload();
-    std::vector<std::shared_ptr<Entity>>& get_entities() { return _entities; }
 
 protected:
-    std::vector<std::shared_ptr<Entity>> _entities;
+    //std::vector<std::shared_ptr<Entity>> _entities;
+    std::shared_ptr<EntityManager> em;
 };

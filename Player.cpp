@@ -1,6 +1,7 @@
 #include "Player.hpp"
 #include "game_parameters.hpp"
 #include "level_system.hpp"
+#include "Renderer.hpp"
 
 using namespace sf;
 using namespace std;
@@ -51,8 +52,8 @@ void Player::update(const float& dt) {
     Entity::update(dt);
 }
 
-void Player::render(sf::RenderWindow& window) const {
-    window.draw(*_shape);
+void Player::render() const {
+    Renderer::queue(_shape.get());
 }
 
 bool Player::valid_move(sf::Vector2f pos) {

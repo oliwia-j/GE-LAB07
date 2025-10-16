@@ -1,5 +1,7 @@
 #include "Scenes.hpp"
 #include "Player.hpp"
+#include "Ghost.hpp"
+#include "Renderer.hpp"
 #include "game_parameters.hpp"
 #include "game_system.hpp"
 #include "level_system.hpp"
@@ -7,64 +9,44 @@
 using ls = LevelSystem;
 using param = Parameters;
 
-std::shared_ptr<Scene> Scenes::maze;
-std::shared_ptr<Scene> Scenes::end;
+std::shared_ptr<Scene> Scenes::menu;
+std::shared_ptr<Scene> Scenes::game;
 
-void MazeScene::update(const float& dt) {
-    if (ls::get_tile_at(_entities[0]->get_position()) == ls::END) {
-        if (_file_path == std::string(param::maze_1)) {
-            _file_path = param::maze_2;
-            reset();
-        }
-        else if (_file_path == std::string(param::maze_2)) {
-            _file_path = param::maze_3;
-            reset();
-        }
-        else {
-            unload();
-            GameSystem::set_active_scene(Scenes::end);
-        }
-        return;
+void MenuScene::update(const float& dt) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+        GameSystem::set_active_scene(Scenes::game);
     }
-
     Scene::update(dt);
 }
 
-void MazeScene::render(sf::RenderWindow& window) {
-    ls::render(window);
-    Scene::render(window);
+void MenuScene::render() {
+    Renderer::queue(&text);
+    Scene::render();
 }
 
-void MazeScene::load() {
-    std::shared_ptr<Entity> player = std::make_shared<Player>();
-    _entities.push_back(player);
-    reset();
-}
-void MazeScene::reset() {
-    ls::load_level(_file_path);
-    for (int y = 0; y < ls::get_height(); ++y) {
-        for (int x = 0; x < ls::get_width(); ++x) {
-            std::cout << ls::get_tile({ x, y });
-        }
-        std::cout << std::endl;
-    }
-
-    _entities[0]->set_position(ls::get_start_position());
-}
-
-void MazeScene::set_file_path(const std::string& file_path) {
-    _file_path = file_path;
-}
-
-void EndScene::load() {
+void MenuScene::load() {
+    em = std::make_shared<EntityManager>();
     font.loadFromFile("./Debug/res/fonts/Roboto/static/Roboto-Bold.ttf");
-    win_text.setFont(font);
-    win_text.setFillColor(sf::Color::White);
-    win_text.setString("You won!");
-    win_text.setPosition((param::game_width * .5f) - (win_text.getLocalBounds().width * .5f), 100);
+    text.setFont(font);
+    text.setFillColor(sf::Color::White);
+    text.setString("Almost Pacman!");
+    text.setPosition((param::game_width * .5f) - (text.getLocalBounds().width * .5f), 100);
 }
 
-void EndScene::render(sf::RenderWindow& window) {
-    Scene::render(window);
-    window.draw(win_text);
+void GameScene::update(const float& dt) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab)) {
+        GameSystem::set_active_scene(Scenes::menu);
+    }
+    Scene::update(dt);
 }
+
+void GameScene::render() {
+    Renderer::queue(&text);
+    Scene::render();
+}
+
+void GameScene::load() {
+    em = std::make_shared<EntityManager>();
+}
+
+void GameScene::respawn() {}
