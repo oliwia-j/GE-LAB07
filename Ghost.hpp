@@ -1,12 +1,12 @@
 #pragma once
-#include "Entity.hpp"
+#include "ecm.hpp"
 #include <iostream>
 
 class Ghost : public Entity {
 public:
 	Ghost();
 	void update(const float& dt) override;
-	void render() const override;
+	void render() override;
 
 private:
 	static constexpr float _radius = 25.f;

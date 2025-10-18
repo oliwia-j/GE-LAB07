@@ -19,12 +19,12 @@ add_library(tile_level STATIC "lib/tile_level_loader/level_system.cpp")
 target_include_directories(tile_level INTERFACE "lib/tile_level_loader")
 target_link_libraries(tile_level sfml-graphics)
 
-add_library(engine STATIC "lib/engine/game_system.cpp" "lib/engine/Renderer.cpp" "lib/engine/Entity.cpp")
+add_library(engine STATIC "lib/engine/game_system.cpp" "lib/engine/Renderer.cpp" "lib/engine/ecm.cpp")
 target_include_directories(engine INTERFACE "lib/engine")
 target_link_libraries(engine sfml-graphics)
 
 #### Practical 04 ####
-add_executable(lab_05 main.cpp Scenes.cpp Player.cpp Ghost.cpp)
+add_executable(lab_05 main.cpp Scenes.cpp Player.cpp Ghost.cpp components.cpp)
 target_include_directories(lab_05 PRIVATE ${SFML_INCS})
 target_link_libraries(lab_05 sfml-graphics tile_level engine)
 
