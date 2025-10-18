@@ -27,7 +27,7 @@ void MenuScene::render() {
 
 void MenuScene::load() {
     em = std::make_shared<EntityManager>();
-    font.loadFromFile("./Debug/res/fonts/Roboto/static/Roboto-Bold.ttf");
+    font.loadFromFile(param::font_path);
     text.setFont(font);
     text.setFillColor(sf::Color::White);
     text.setString("Almost Pacman!");
@@ -48,7 +48,7 @@ void GameScene::render() {
 }
 
 void GameScene::load() {
-    ls::load_level(param::pacman_map, 25.0f);
+    ls::load_level(param::pacman_map, param::tile_size);
 
     em = std::make_shared<EntityManager>();
 

@@ -11,7 +11,6 @@ using ls = LevelSystem;
 Player::Player() {};
 
 void Player::update(const float& dt) {
-
     Entity::update(dt);
 }
 

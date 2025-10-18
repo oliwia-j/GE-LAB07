@@ -46,6 +46,7 @@ class PlayerMovementComponent : public ActorMovementComponent {
 public:
     explicit PlayerMovementComponent(Entity* const p);
     void update(const float& dt) override;
+    bool valid_move(sf::Vector2f pos);
 };
 
 /////

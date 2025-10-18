@@ -2,8 +2,10 @@
 #include "game_parameters.hpp"
 #include "Renderer.hpp"
 #include <SFML/Graphics.hpp>
+#include "level_system.hpp"
 
 using param = Parameters;
+using ls = LevelSystem;
 
 void ShapeComponent::update(const float& dt) {
 	_shape->setPosition(_parent->get_position());
@@ -63,33 +65,37 @@ void PlayerMovementComponent::update(const float& dt) {
         movement = sf::Vector2f({ dt * -1 * _speed, 0.0f });
         new_pos = _parent->get_position() + movement;
         in_bounds = _parent->get_position().x > param::entity_size;
-        std::cout << "move left" << std::endl;
+        //std::cout << "move left" << std::endl;
     }
     // Move Right
     if (sf::Keyboard::isKeyPressed(param::controls[1])) {
         movement = sf::Vector2f({ dt * _speed, 0.0f });
         new_pos = _parent->get_position() + movement;
         in_bounds = _parent->get_position().x < param::game_width - param::entity_size;
-        std::cout << "move right" << std::endl;
+        //std::cout << "move right" << std::endl;
     }
     // Move Up
     if (sf::Keyboard::isKeyPressed(param::controls[2])) {
         movement = sf::Vector2f({ 0.0f, dt * -1 * _speed });
         new_pos = _parent->get_position() + movement;
         in_bounds = _parent->get_position().y > param::entity_size;
-        std::cout << "move up" << std::endl;
+        //std::cout << "move up" << std::endl;
     }
     // Move Down
     if (sf::Keyboard::isKeyPressed(param::controls[3])) {
         movement = sf::Vector2f({ 0.0f, dt * _speed });
         new_pos = _parent->get_position() + movement;
         in_bounds = _parent->get_position().y < param::game_height - param::entity_size;
-        std::cout << "move down" << std::endl;
+        //std::cout << "move down" << std::endl;
     }
 
-    //if (in_bounds && valid_move(new_pos)) {
-    //    move(movement);
-    //}
+    if (in_bounds && valid_move(new_pos)) {
+        _parent->set_position(new_pos);
+    }
+}
+
+bool PlayerMovementComponent::valid_move(sf::Vector2f pos) {
+    return (ls::get_tile_at(pos) != ls::WALL);
 }
 
 /////

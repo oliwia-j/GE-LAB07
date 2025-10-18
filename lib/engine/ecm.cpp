@@ -58,6 +58,9 @@ std::vector<std::shared_ptr<Entity>> EntityManager::get_enemies() {
 };
 
 void EntityManager::update(double dt) {
+	if (_player && _player->is_alive()) {
+		_player->update(dt);
+	}
 	for (std::shared_ptr<Entity>& item : _enemies) {
 		if (item->is_alive()) {
 			item->update(dt);
@@ -65,6 +68,9 @@ void EntityManager::update(double dt) {
 	}
 }
 void EntityManager::render() {
+	if (_player && _player->is_alive()) {
+		_player->render();
+	}
 	for (std::shared_ptr<Entity>& item : _enemies) {
 		item->render();
 	}
