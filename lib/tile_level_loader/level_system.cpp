@@ -1,6 +1,4 @@
 #include "level_system.hpp"
-#include <fstream>
-#include <iostream>
 
 using namespace sf;
 using namespace std;

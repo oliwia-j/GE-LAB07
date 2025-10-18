@@ -1,6 +1,4 @@
 #include "ecm.hpp"
-#include <iostream>
-#include "Renderer.hpp"
 
 Entity::Entity() {}
 

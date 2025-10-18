@@ -1,10 +1,11 @@
 #pragma once
-
 #include <SFML/Graphics.hpp>
 #include <memory>
 #include <string>
 #include <vector>
 #include <map>
+#include <fstream>
+#include <iostream>
 
 class LevelSystem {
 public:

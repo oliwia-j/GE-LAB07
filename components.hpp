@@ -2,6 +2,10 @@
 #include "ecm.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include "game_parameters.hpp"
+#include "Renderer.hpp"
+#include <SFML/Graphics.hpp>
+#include "level_system.hpp"
 
 class ShapeComponent : public Component {
 public:
@@ -35,7 +39,7 @@ public:
     void render() override {}
     void update(const float& dt) override;
 protected:
-    //bool _valid_move(const sf::Vector2f&);
+    bool _valid_move(const sf::Vector2f&);
     float _speed;
 };
 
@@ -46,7 +50,6 @@ class PlayerMovementComponent : public ActorMovementComponent {
 public:
     explicit PlayerMovementComponent(Entity* const p);
     void update(const float& dt) override;
-    bool valid_move(sf::Vector2f pos);
 };
 
 /////

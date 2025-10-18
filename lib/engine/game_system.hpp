@@ -2,6 +2,8 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "ecm.hpp"
+#include "game_parameters.hpp"
+#include "Renderer.hpp"
 
 class Scene; // forward definition
 
@@ -32,6 +34,5 @@ public:
     virtual void unload();
 
 protected:
-    //std::vector<std::shared_ptr<Entity>> _entities;
     std::shared_ptr<EntityManager> em;
 };

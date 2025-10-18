@@ -1,8 +1,4 @@
 #include "components.hpp"
-#include "game_parameters.hpp"
-#include "Renderer.hpp"
-#include <SFML/Graphics.hpp>
-#include "level_system.hpp"
 
 using param = Parameters;
 using ls = LevelSystem;
@@ -49,6 +45,10 @@ void ActorMovementComponent::set_speed(float speed) {
     _speed = speed;
 }
 
+bool ActorMovementComponent::_valid_move(const sf::Vector2f& pos) {
+    return (ls::get_tile_at(pos) != ls::WALL);
+}
+
 /////
 
 PlayerMovementComponent::PlayerMovementComponent(Entity* p)
@@ -89,13 +89,9 @@ void PlayerMovementComponent::update(const float& dt) {
         //std::cout << "move down" << std::endl;
     }
 
-    if (in_bounds && valid_move(new_pos)) {
+    if (in_bounds && _valid_move(new_pos)) {
         _parent->set_position(new_pos);
     }
-}
-
-bool PlayerMovementComponent::valid_move(sf::Vector2f pos) {
-    return (ls::get_tile_at(pos) != ls::WALL);
 }
 
 /////

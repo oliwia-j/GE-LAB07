@@ -1,6 +1,4 @@
 #include "game_system.hpp"
-#include "game_parameters.hpp"
-#include "Renderer.hpp"
 
 using param = Parameters;
 

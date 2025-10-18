@@ -1,6 +1,4 @@
 #include "Player.hpp"
-#include "game_parameters.hpp"
-#include "level_system.hpp"
 
 using namespace sf;
 using namespace std;

@@ -1,6 +1,4 @@
 #include "Renderer.hpp"
-#include <queue>
-#include <iostream>
 
 using namespace std;
 using namespace sf;

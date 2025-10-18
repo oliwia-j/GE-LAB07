@@ -5,7 +5,8 @@
 #include <typeindex>
 #include <vector>
 #include <SFML/Graphics.hpp>
-
+#include <iostream>
+#include "Renderer.hpp"
 
 class Component; //forward declare
 

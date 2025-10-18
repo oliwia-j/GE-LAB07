@@ -2,6 +2,13 @@
 #include <string>
 #include <SFML/Graphics.hpp>
 #include "game_system.hpp"
+#include "Player.hpp"
+#include "Ghost.hpp"
+#include "Renderer.hpp"
+#include "game_parameters.hpp"
+#include "game_system.hpp"
+#include "level_system.hpp"
+#include "components.hpp"
 
 struct Scenes {
 	static std::shared_ptr<Scene> menu;

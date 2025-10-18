@@ -1,6 +1,8 @@
 #pragma once
 #include "ecm.hpp"
 #include <iostream>
+#include "game_parameters.hpp"
+#include "level_system.hpp"
 
 class Ghost : public Entity {
 public:

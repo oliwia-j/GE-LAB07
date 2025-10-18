@@ -23,9 +23,5 @@ struct Parameters {
     };
 
     static constexpr char* font_path = "./Debug/res/fonts/Roboto/static/Roboto-Bold.ttf";
-
     static constexpr char* pacman_map = "./Debug/res/levels/pacman.txt";
-    static constexpr char* maze_1 = "./Debug/res/levels/maze.txt";
-    static constexpr char* maze_2 = "./Debug/res/levels/maze_2.txt";
-    static constexpr char* maze_3 = "./Debug/res/levels/maze_3.txt";
 };
