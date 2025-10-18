@@ -39,15 +39,33 @@ void Entity::set_alive(bool alive) {
 
 Component::Component(Entity* const p) : _parent(p) {};
 
+EntityManager::EntityManager() {};
+
+void EntityManager::set_player(std::shared_ptr<Entity> p) {
+	_player = p;
+};
+
+std::shared_ptr<Entity> EntityManager::get_player() {
+	return _player;
+};
+
+void EntityManager::add_enemy(std::shared_ptr<Entity> e) {
+	_enemies.push_back(e);
+};
+
+std::vector<std::shared_ptr<Entity>> EntityManager::get_enemies() {
+	return _enemies;
+};
+
 void EntityManager::update(double dt) {
-	for (std::shared_ptr<Entity>& item : list) {
+	for (std::shared_ptr<Entity>& item : _enemies) {
 		if (item->is_alive()) {
 			item->update(dt);
 		}
 	}
 }
 void EntityManager::render() {
-	for (std::shared_ptr<Entity>& item : list) {
+	for (std::shared_ptr<Entity>& item : _enemies) {
 		item->render();
 	}
 }

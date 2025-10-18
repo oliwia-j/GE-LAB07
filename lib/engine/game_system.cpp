@@ -71,7 +71,8 @@ void Scene::render() {
 }
 
 void Scene::unload() {
-    for (std::shared_ptr<Entity>& ent : em->list)
+    em->get_player().reset();
+    for (std::shared_ptr<Entity>& ent : em->get_enemies())
         ent.reset();
-    em->list.clear();
+    em->get_enemies().clear();
 }

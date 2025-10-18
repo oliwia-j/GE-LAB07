@@ -43,10 +43,13 @@ void GameScene::update(const float& dt) {
 
 void GameScene::render() {
     Renderer::queue(&text);
+    ls::render(Renderer::get_window());
     Scene::render();
 }
 
 void GameScene::load() {
+    ls::load_level("./Debug/res/levels/pacman.txt", 25.0f);
+
     em = std::make_shared<EntityManager>();
 
     {
@@ -56,7 +59,8 @@ void GameScene::load() {
         shape->set_shape<sf::CircleShape>(param::entity_size);
         shape->get_shape().setFillColor(sf::Color::Yellow);
         shape->get_shape().setOrigin(sf::Vector2f(param::entity_size, param::entity_size));
-        em->list.push_back(player);
+        
+        em->set_player(player);
     }
 
     const sf::Color ghost_cols[]{ {208, 62, 25},    // red Blinky
@@ -72,8 +76,26 @@ void GameScene::load() {
         shape->get_shape().setFillColor(ghost_cols[i % param::ghost_count]);
         shape->get_shape().setOrigin(
             sf::Vector2f(param::entity_size, param::entity_size));
-        em->list.push_back(ghost);
+        em->add_enemy(ghost);
     }
+
+    respawn();
 }
 
-void GameScene::respawn() {}
+void GameScene::respawn() {
+    std::shared_ptr<Entity> player = em->get_player();
+    std::vector<std::shared_ptr<Entity>> enemies = em->get_enemies();
+
+    player->set_position(ls::get_start_position());
+    player->get_compatible_components<ActorMovementComponent>()[0]
+        ->set_speed(param::player_speed);
+
+    std::vector<sf::Vector2i> ghost_spawns = ls::find_tiles(ls::ENEMY);
+    for (size_t i = 1; i < enemies.size(); i++) {
+        std::shared_ptr<Entity>& ghost = enemies[i];
+        ghost->set_position(
+            ls::get_tile_position(ghost_spawns[rand() % ghost_spawns.size()]));
+        ghost->get_compatible_components<ActorMovementComponent>()[0]->set_speed(param::ghost_speed);
+    }
+    // ...
+}

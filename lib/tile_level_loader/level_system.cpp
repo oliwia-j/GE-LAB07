@@ -136,6 +136,27 @@ LevelSystem::Tile LevelSystem::get_tile_at(Vector2f v) {
     return get_tile(Vector2i((v - _offset) / (_tile_size)));
 }
 
+// This method was generated with chatgpt
+std::vector<sf::Vector2i> LevelSystem::find_tiles(Tile type) {
+    std::vector<sf::Vector2i> locations;
+
+    // Safety check in case the level isn't loaded
+    if (!_tiles) {
+        return locations;
+    }
+
+    for (int y = 0; y < _height; ++y) {
+        for (int x = 0; x < _width; ++x) {
+            int index = x + y * _width;
+            if (_tiles[index] == type) {
+                locations.emplace_back(x, y); /* https://andreasfertig.com/blog/2023/04/push_back-vs-emplace_back-when-to-use-what/ */
+            }
+        }
+    }
+
+    return locations;
+}
+
 int LevelSystem::get_height() { return _height; }
 int LevelSystem::get_width() { return _width; }
 

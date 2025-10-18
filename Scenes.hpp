@@ -24,6 +24,7 @@ class GameScene : public Scene {
 private:
 	sf::Text text;
 	sf::Clock scoreClock;
+
 	void respawn();
 
 public:

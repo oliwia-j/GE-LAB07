@@ -35,21 +35,9 @@ public:
 		return sp;
 	}
 
-	template <typename T>
-	const std::vector<std::shared_ptr<T>> get_components() const {
-		static_assert(std::is_base_of<Component, T>::value, "T != component");
-		std::vector<std::shared_ptr<T>> ret;
-		for (const auto c : _components) {
-			if (typeid(*c) == typeid(T)) {
-				ret.push_back(std::dynamic_pointer_cast<T>(c));
-			}
-		}
-		return std::move(ret);
-	}
-
 	// Will return a T component, or anything derived from a T component.
 	template <typename T>
-	const std::vector<std::shared_ptr<T>> get_compatible_component() {
+	const std::vector<std::shared_ptr<T>> get_compatible_components() {
 		static_assert(std::is_base_of<Component, T>::value, "T != component");
 		std::vector<std::shared_ptr<T>> ret;
 		for (auto c : _components) {
@@ -83,8 +71,17 @@ protected:
 	explicit Component(Entity* const p);
 };
 
-struct EntityManager {
-	std::vector<std::shared_ptr<Entity>> list;
+class EntityManager {
+public:
+	EntityManager();
+	~EntityManager() = default;
 	void update(double dt);
 	void render();
+	void set_player(std::shared_ptr<Entity> p);
+	std::shared_ptr<Entity> get_player();
+	void add_enemy(std::shared_ptr<Entity> e);
+	std::vector<std::shared_ptr<Entity>> get_enemies();
+protected:
+	std::vector<std::shared_ptr<Entity>> _enemies;
+	std::shared_ptr<Entity> _player;
 };
