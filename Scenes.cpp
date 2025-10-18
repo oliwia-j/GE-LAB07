@@ -48,7 +48,7 @@ void GameScene::render() {
 }
 
 void GameScene::load() {
-    ls::load_level("./Debug/res/levels/pacman.txt", 25.0f);
+    ls::load_level(param::pacman_map, 25.0f);
 
     em = std::make_shared<EntityManager>();
 
