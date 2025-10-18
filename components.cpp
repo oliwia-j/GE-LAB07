@@ -92,3 +92,9 @@ void PlayerMovementComponent::update(const float& dt) {
     //}
 }
 
+/////
+
+EnemyAIComponent::EnemyAIComponent(Entity* p)
+    : ActorMovementComponent(p) {}
+
+void EnemyAIComponent::update(const float& dt) {}

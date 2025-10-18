@@ -47,3 +47,11 @@ public:
     explicit PlayerMovementComponent(Entity* const p);
     void update(const float& dt) override;
 };
+
+/////
+
+class EnemyAIComponent : public ActorMovementComponent {
+public:
+    explicit EnemyAIComponent(Entity* const p);
+    void update(const float& dt) override;
+};

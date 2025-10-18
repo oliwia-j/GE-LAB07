@@ -67,6 +67,7 @@ void GameScene::load() {
     for (int i = 0; i < param::ghost_count; i++) {
         std::shared_ptr<Entity> ghost = std::make_shared<Entity>();
         std::shared_ptr<ShapeComponent> shape = ghost->add_component<ShapeComponent>();
+        ghost->add_component<EnemyAIComponent>();
         shape->set_shape<sf::CircleShape>(param::entity_size);
         shape->get_shape().setFillColor(ghost_cols[i % param::ghost_count]);
         shape->get_shape().setOrigin(
