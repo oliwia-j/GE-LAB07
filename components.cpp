@@ -97,6 +97,61 @@ void PlayerMovementComponent::update(const float& dt) {
 /////
 
 EnemyAIComponent::EnemyAIComponent(Entity* p)
-    : ActorMovementComponent(p) {}
+    : ActorMovementComponent(p) {
+    _state = ROAMING;
+}
 
-void EnemyAIComponent::update(const float& dt) {}
+static const sf::Vector2i directions[] = { {1, 0}, {0, 1}, {0, -1}, {-1, 0} };
+
+void EnemyAIComponent::update(const float& dt) {
+    
+    // Amount to move
+    const float mva = static_cast<float>(dt * _speed);
+    // Curent position
+    const sf::Vector2f pos = _parent->get_position();
+    // Next position
+    const sf::Vector2f newpos = pos + _direction * mva;
+    // Inverse of our current direction
+    const sf::Vector2i baddir = -1 * sf::Vector2i(_direction);
+    // Random new direction
+    sf::Vector2i newdir = directions[(rand() % 4)];
+
+    switch (_state) {
+    case ROAMING:
+        if(
+            // Wall in front or at waypoint
+            ls::get_tile_at(pos) == ls::WAYPOINT && ls::get_tile_at(newpos) == ls::WAYPOINT)
+        {
+            // start rotate
+            _state = ROTATING;
+        }
+        else {
+            // keep moving
+            move(_direction * mva);
+        }
+        break;
+
+    case ROTATING:
+        while (
+            // Don't reverse
+            // and Don't pick a direction that will lead to a wall
+            newdir == baddir &&
+            ls::get_tile_at(pos + sf::Vector2f(newdir) * mva) == ls::WAYPOINT
+            ) {
+            // pick new direction
+            newdir = directions[(rand() % 4)];
+        }
+        _direction = sf::Vector2f(newdir);
+        _state = ROTATED;
+        break;
+
+    case ROTATED:
+        // have we left the waypoint?
+        if (ls::get_tile_at(pos) != ls::WAYPOINT) {
+            _state = ROAMING; // yes
+        }
+        move(_direction * mva); // no
+        break;
+    }
+    ActorMovementComponent::update(dt);
+}
