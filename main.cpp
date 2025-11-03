@@ -1,20 +1,17 @@
+#include <iostream>
+#include <vector>
 #include <SFML/Graphics.hpp>
+#include "game_parameters.hpp"
+#include "scenes.hpp"
 
-int main() {
-    sf::RenderWindow window(sf::VideoMode({ 200, 200 }), "SFML works!");
-    sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Green);
+using param = Parameters;
 
-    while (window.isOpen()) {
-        sf::Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
-                window.close();
-            }
-        }
-        window.clear();
-        window.draw(shape);
-        window.display();
-    }
-    return 0;
+int main(){
+  Scenes::menu = std::make_shared<MenuScene>();
+  Scenes::menu->load();
+  Scenes::game = std::make_shared<GameScene>();
+  Scenes::game->load();
+  GameSystem::set_active_scene(Scenes::menu);
+  GameSystem::start(param::game_width,param::game_height,"pacman",param::time_step);
+  return 0;
 }
