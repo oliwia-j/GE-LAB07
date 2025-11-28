@@ -20,26 +20,22 @@ add_subdirectory("lib/box2d")
 set(B2D_INCS "lib/box2d/include")
 link_directories("${CMAKE_BINARY_DIR}/lib/box2d/lib")
 
-
-#### level system ####
-add_library(tile_level STATIC tile_level_loader/level_system.cpp)
-target_include_directories(tile_level INTERFACE tile_level_loader)
-target_link_libraries(tile_level sfml-graphics)
-
 #### Engine ####
 add_library(engine STATIC engine/game_system.cpp 
                         engine/renderer.cpp 
                         engine/ecm.cpp)
-target_include_directories(engine INTERFACE egine)
+target_include_directories(engine INTERFACE engine)
 target_link_libraries(engine sfml-graphics)
 
 #### executable ####
 add_executable(lab-06 
-    main.cpp 
-    components.cpp
-    scenes.cpp)
-target_include_directories(lab-06 PRIVATE ${SFML_INCS} ${B2D_INCS} tile_level_loader engine)
-target_link_libraries(lab-06 sfml-graphics box2d tile_level engine)
+    main.cpp
+    scenes.cpp
+    b2d_utils.cpp
+    )
+target_include_directories(lab-06 PRIVATE ${SFML_INCS} ${B2D_INCS} engine)
+target_link_libraries(lab-06 sfml-graphics box2d engine)
+
 set_target_properties(lab-06 
     PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY
     ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(Configuration)

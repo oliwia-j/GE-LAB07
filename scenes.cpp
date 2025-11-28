@@ -1,146 +1,90 @@
-#include <cmath>
 #include "scenes.hpp"
 #include "game_parameters.hpp"
-#include "components.hpp"
 #include "renderer.hpp"
-#include "level_system.hpp"
+#include "b2d_utils.hpp"
 
-using ls = LevelSystem;
-using gs = GameSystem;
+// src: https://learn.microsoft.com/en-us/previous-versions/visualstudio/visual-studio-2012/4hwaceh6(v=vs.110)?redirectedfrom=MSDN
+#define _USE_MATH_DEFINES // for C++
+#include <math.h>
+
 using param = Parameters;
+namespace b2 = box2d;
 
-std::shared_ptr<Scene> Scenes::menu;
-std::shared_ptr<Scene> Scenes::game;
+std::shared_ptr<Scene> Scenes::physics;
 
-void MenuScene::update(const float &dt) {
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
-      gs::set_active_scene(Scenes::game);
-  }
-  Scene::update(dt);
-  _text.setString("Almost Pacman");
-}
+void PhysicsScene::load() {
+    b2WorldDef world_def = b2DefaultWorldDef();
+    world_def.gravity = b2Vec2({ 0.0f, param::g });
+    world_id = b2CreateWorld(&world_def);
 
-void MenuScene::render() {
-  Renderer::queue(&_text);
-  Scene::render();
-}
+    // Create Boxes
+    for (int i = 1; i < 11; ++i) {
+        // Create SFML shapes for each box
+        std::shared_ptr<sf::RectangleShape> s = std::make_shared<sf::RectangleShape>();
+        s->setPosition(sf::Vector2f(i * (param::game_width / 12.f), param::game_height * .7f));
+        s->setSize(sf::Vector2f(50.0f, 50.0f));
+        s->setOrigin(sf::Vector2f(25.0f, 25.0f));
+        s->setFillColor(sf::Color::White);
+        sprites.push_back(s);
 
-void MenuScene::load() {
-  _font.loadFromFile(param::font_path);
-  _text.setFont(_font);
-  _text.setCharacterSize(60);
-}
-
-
-void GameScene::update(const float &dt){
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab)) {
-      gs::set_active_scene(Scenes::menu);
-  }
-    auto vect_distance = [](sf::Vector2f a,sf::Vector2f b) -> float{
-      return sqrt((a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y));
-    };
-  for (const std::shared_ptr<Entity> &ghost: _ghosts) {
-    if (vect_distance(ghost->get_position(), _player->get_position()) < 30.0f) {
-        respawn();
+        // Create a dynamic physics body for the box
+        b2BodyId b = b2::create_physics_box(world_id, true, s);
+        // Give the box a spin
+        b2Body_ApplyAngularImpulse(b, 5.0f, true);
+        bodies.push_back(b);
     }
-  }
-    Scene::update(dt);
-    _nibbles.update(dt);
+
+    sf::Vector2f walls[] = {
+        // Top
+        sf::Vector2f(param::game_width * .5f, 5.f), sf::Vector2f(param::game_width, 10.f),
+        // Bottom
+        sf::Vector2f(param::game_width * .5f, param::game_height - 5.f), sf::Vector2f(param::game_width, 10.f),
+        // left
+        sf::Vector2f(5.f, param::game_height * .5f), sf::Vector2f(10.f, param::game_height),
+        // right
+        sf::Vector2f(param::game_width - 5.f, param::game_height * .5f), sf::Vector2f(10.f, param::game_height)
+    };
+
+    // Build Walls
+    for (int i = 0; i < 7; i += 2) {
+        // Create SFML shapes for each wall
+        std::shared_ptr<sf::RectangleShape> s = std::make_shared<sf::RectangleShape>();
+        s->setPosition(walls[i]);
+        s->setSize(walls[i + 1]);
+        s->setOrigin(walls[i + 1] / 2.f);
+        s->setFillColor(sf::Color::White);
+        sprites.push_back(s);
+        // Create a static physics body for the wall
+        b2BodyId b = b2::create_physics_box(world_id, false, s);
+        bodies.push_back(b);
+    }
 }
 
-void GameScene::render(){
-  ls::render(Renderer::get_window());
-  Scene::render();
-  _entities.render();
-  _nibbles.render();
+void PhysicsScene::update(const float& dt) {
+    // Step Physics world by time_step
+    b2World_Step(world_id, param::time_step, param::sub_step_count);
+
+    for (int i = 0; i < bodies.size(); ++i) {
+        // Sync Sprites to physics position
+        sprites[i]->setPosition(b2::invert_height(b2::bv2_to_sv2(b2Body_GetPosition(bodies[i]))));
+        // Sync Sprites to physics Rotation
+        sprites[i]->setRotation((180 / M_PI) * asin(b2Body_GetRotation(bodies[i]).s));
+    }
+}
+
+void PhysicsScene::render() {
+    for (std::shared_ptr<sf::RectangleShape> sprite : sprites)
+        Renderer::queue(sprite.get());
 
 }
 
-void GameScene::load() {
+void PhysicsScene::unload() {
+    for (std::shared_ptr<sf::RectangleShape>& shape : sprites)
+        shape.reset();
+    sprites.clear();
 
-  ls::load_level(param::pacman_map_path,param::tile_size);
-
-  {
-    std::shared_ptr<Entity> player = std::make_shared<Entity>();
-    std::shared_ptr<ShapeComponent> shape = player->add_component<ShapeComponent>();
-    shape->set_shape<sf::CircleShape>(param::entity_size);
-    shape->get_shape().setFillColor(sf::Color::Yellow);
-    shape->get_shape().setOrigin(sf::Vector2f(param::entity_size, param::entity_size));  
-
-    player->add_component<PlayerMovementComponent>();
-    player->set_position(ls::get_start_position());
-    _entities.list.push_back(player);
-    _player = _entities.list.back();
-  }
-
-  const sf::Color ghost_cols[]{{208, 62, 25},    // red Blinky
-                               {219, 133, 28},   // orange Clyde
-                               {70, 191, 238},   // cyan Inky
-                               {234, 130, 229}}; // pink Pinky
-
-  for(int i = 0; i < param::number_ghosts; i++){
-    std::shared_ptr<Entity> ghost = std::make_shared<Entity>();
-    std::shared_ptr<ShapeComponent> shape = ghost->add_component<ShapeComponent>();
-    shape->set_shape<sf::CircleShape>(param::entity_size);
-    shape->get_shape().setFillColor(ghost_cols[i % param::number_ghosts]);
-    shape->get_shape().setOrigin(sf::Vector2f(param::entity_size, param::entity_size));
-    ghost->add_component<EnemyAIComponent>();
-    _ghosts.push_back(ghost);
-    _entities.list.push_back(ghost);
-  }
-  respawn();
-}
-
-void GameScene::respawn() {
- _player->set_position(ls::get_start_position());
- _player->get_compatible_components<ActorMovementComponent>()[0]
-            ->set_speed(param::player_speed);
-
- std::vector<sf::Vector2i> ghost_spawns = ls::find_tiles(ls::ENEMY);
- for (size_t i = 1; i < _entities.list.size(); i++) {
-    std::shared_ptr<Entity> &ghost = _entities.list[i];
-    ghost->set_position(
-        ls::get_tile_position(ghost_spawns[rand() % ghost_spawns.size()]));
-    ghost->get_compatible_components<ActorMovementComponent>()[0]->set_speed(param::ghost_speed);
- }
- 
-  //clear any remaining nibbles
-  for (auto n : _nibbles.list) {
-    n->set_for_delete();
-    n.reset();
-  }
-  _nibbles.list.clear();
-
-    //white nibbles
-  std::vector<sf::Vector2i> nibbleLoc = ls::find_tiles(ls::EMPTY);
-  for (const sf::Vector2i& nl : nibbleLoc) {
-    std::shared_ptr<Entity> cherry = _make_nibble(nl, false);
-    //add to _wnts and nibbles list
-    _nibbles.list.push_back(cherry);
-  }
-  //blue nibbles
-  nibbleLoc = ls::find_tiles(ls::WAYPOINT);
-  for (const sf::Vector2i& nl : nibbleLoc) {
-    std::shared_ptr<Entity> cherry = _make_nibble(nl, true);
-    _nibbles.list.push_back(cherry);
-  }
-}
-
-std::shared_ptr<Entity> GameScene::_make_nibble(const sf::Vector2i& pos, bool big) {
-  std::shared_ptr<Entity> cherry = std::make_shared<Entity>();
-  std::shared_ptr<ShapeComponent> s = cherry->add_component<ShapeComponent>();
-  //set colour
-  if(big){
-    s->set_shape<sf::CircleShape>(param::big_nibble_size);
-    s->get_shape().setFillColor(sf::Color::Blue);
-    s->get_shape().setOrigin(param::big_nibble_size,param::big_nibble_size);
-  }else{
-    s->set_shape<sf::CircleShape>(param::small_nibble_size);
-    s->get_shape().setFillColor(sf::Color::White);
-    s->get_shape().setOrigin(param::small_nibble_size,param::small_nibble_size);
-  }
-  
-  cherry->add_component<PickupComponent>(big);
-  cherry->set_position(ls::get_tile_position(pos) + sf::Vector2f(10.f, 10.f));
-  return cherry;
+    for (b2BodyId body : bodies)
+        b2DestroyBody(body);
+    bodies.clear();
+    b2DestroyWorld(world_id);
 }

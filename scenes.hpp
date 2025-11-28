@@ -1,39 +1,20 @@
 #pragma once
-#include <memory>
 #include "game_system.hpp"
+#include "box2d/box2d.h"
 
-
-
-class MenuScene : public Scene {
+class PhysicsScene : public Scene {
 private:
-  sf::Text _text;
-  sf::Font _font;
-
+	b2WorldId world_id;
+	std::vector<b2BodyId> bodies;
+	std::vector<std::shared_ptr<sf::RectangleShape>> sprites;
 public:
-  MenuScene() = default;
-  void update(const float &dt) override;
-  void render() override;
-  void load()override;
+	PhysicsScene() = default;
+	void update(const float& dt) override;
+	void render() override;
+	void load()override;
+	void unload() override;
 };
 
-class GameScene : public Scene {
-private:
-  sf::Text _text;
-  sf::Clock _score_clock;
-  std::shared_ptr<Entity> _player;
-  std::vector<std::shared_ptr<Entity>> _ghosts;
-  EntityManager _nibbles;
-  std::shared_ptr<Entity> _make_nibble(const sf::Vector2i& pos, bool big);
-  void respawn();
-
-public:
-  GameScene() = default;
-  void update(const float &dt) override;
-  void render() override;
-  void load() override;
-};
-
-struct Scenes{
-  static std::shared_ptr<Scene> menu;
-  static std::shared_ptr<Scene> game;
+struct Scenes {
+	static std::shared_ptr<Scene> physics;
 };
