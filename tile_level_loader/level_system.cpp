@@ -31,7 +31,7 @@ void LevelSystem::set_color(LevelSystem::Tile t, sf::Color c) {
 
 void LevelSystem::load_level(const std::string& path, float tile_size) {
     _tile_size = tile_size;
-    int w = 0, h = 0;
+    size_t w = 0, h = 0;
     std::string buffer;
 
     // Load in file to buffer
@@ -46,7 +46,7 @@ void LevelSystem::load_level(const std::string& path, float tile_size) {
     else {
         throw std::string("Couldn't open level file: ") + path;
     }
-    int x = 0;
+    size_t x = 0;
 
     std::vector<Tile> temp_tiles;
     for (int i = 0; i < buffer.size(); ++i) {
@@ -57,7 +57,7 @@ void LevelSystem::load_level(const std::string& path, float tile_size) {
             break;
         case 's':
             temp_tiles.push_back(START);
-            _start_position = get_tile_position({ x,h });
+            _start_position = get_tile_position(sf::Vector2<size_t>({ x,h }));
             break;
         case 'e':
             temp_tiles.push_back(END);
@@ -96,8 +96,8 @@ void LevelSystem::load_level(const std::string& path, float tile_size) {
 
 void LevelSystem::build_sprites() {
     _sprites.clear();
-    for (int y = 0; y < LevelSystem::get_height(); ++y) {
-        for (int x = 0; x < LevelSystem::get_width(); ++x) {
+    for (size_t y = 0; y < LevelSystem::get_height(); ++y) {
+        for (size_t x = 0; x < LevelSystem::get_width(); ++x) {
             std::unique_ptr<sf::RectangleShape> s = std::make_unique<sf::RectangleShape>();
             s->setPosition(get_tile_position({ x, y }));
             s->setSize(sf::Vector2f(_tile_size, _tile_size));
@@ -107,12 +107,12 @@ void LevelSystem::build_sprites() {
     }
 }
 
-sf::Vector2f LevelSystem::get_tile_position(sf::Vector2i p) {
+sf::Vector2f LevelSystem::get_tile_position(sf::Vector2<size_t> p) {
 
     return (sf::Vector2f(p.x, p.y) * _tile_size);
 }
 
-LevelSystem::Tile LevelSystem::get_tile(sf::Vector2i p) {
+LevelSystem::Tile LevelSystem::get_tile(sf::Vector2<size_t> p) {
     if ((p.x >= _width || p.y >= _height) || (p.x < 0 || p.y < 0)) {
         return EMPTY;
     }
@@ -126,7 +126,7 @@ LevelSystem::Tile LevelSystem::get_tile_at(sf::Vector2f v) {
         return EMPTY;
         //throw std::string("Tile out of range ");
     }
-    return get_tile(sf::Vector2i((v - _offset) / (_tile_size)));
+    return get_tile(sf::Vector2<size_t>((v - _offset) / (_tile_size)));
 }
 
 void LevelSystem::render(sf::RenderWindow& window) {
@@ -137,21 +137,21 @@ void LevelSystem::render(sf::RenderWindow& window) {
 
 sf::Vector2f LevelSystem::get_start_position() { return _start_position; }
 
-std::vector<sf::Vector2i> LevelSystem::find_tiles(LevelSystem::Tile type) {
-    auto v = std::vector<sf::Vector2i>();
-    for (int i = 0; i < _width * _height; ++i) {
+std::vector<sf::Vector2<size_t>> LevelSystem::find_tiles(LevelSystem::Tile type) {
+    auto v = std::vector<sf::Vector2<size_t>>();
+    for (size_t i = 0; i < _width * _height; ++i) {
         if (_tiles[i] == type) {
-            v.push_back({ i % _width, i / _width });
+            v.push_back(sf::Vector2<size_t>({ i % _width, i / _width }));
         }
     }
 
     return v;
 }
 
-std::vector<sf::Vector2i> LevelSystem::get_tiles_list(Tile type) {
-    std::vector<sf::Vector2i> list;
-    for (int y = 0; y < _height; ++y) {
-        for (int x = 0; x < _width; ++x) {
+std::vector<sf::Vector2<size_t>> LevelSystem::get_tiles_list(Tile type) {
+    std::vector<sf::Vector2<size_t>> list;
+    for (size_t y = 0; y < _height; ++y) {
+        for (size_t x = 0; x < _width; ++x) {
             Tile t = get_tile({ x, y });
             if (t != type) {
                 continue;
@@ -162,18 +162,18 @@ std::vector<sf::Vector2i> LevelSystem::get_tiles_list(Tile type) {
     return list;
 }
 
-std::vector<std::vector<sf::Vector2i>> LevelSystem::get_groups(Tile type) {
-    std::vector<std::vector<sf::Vector2i>> groups;
-    std::vector<sf::Vector2i> tile_list = find_tiles(type);
+std::vector<std::vector<sf::Vector2<size_t>>> LevelSystem::get_groups(Tile type) {
+    std::vector<std::vector<sf::Vector2<size_t>>> groups;
+    std::vector<sf::Vector2<size_t>> tile_list = find_tiles(type);
     while (!tile_list.empty()) {
-        std::vector<sf::Vector2i> group;
+        std::vector<sf::Vector2<size_t>> group;
         if (tile_list.size() == 1)
             group.push_back(tile_list[0]);
         else
             _get_group(type, tile_list.front(), tile_list, group, true);
         groups.push_back(group);
 
-        for (sf::Vector2i pos : group) {
+        for (sf::Vector2<size_t> pos : group) {
             int i = 0;
             for (; i < tile_list.size(); i++)
                 if (tile_list[i] == pos)
@@ -184,7 +184,7 @@ std::vector<std::vector<sf::Vector2i>> LevelSystem::get_groups(Tile type) {
     return groups;
 }
 
-void LevelSystem::_get_group(Tile type, const sf::Vector2i& pos, const std::vector<sf::Vector2i>& tile_list, std::vector<sf::Vector2i>& group, bool vert) {
+void LevelSystem::_get_group(Tile type, const sf::Vector2<size_t>& pos, const std::vector<sf::Vector2<size_t>>& tile_list, std::vector<sf::Vector2<size_t>>& group, bool vert) {
     if (in_group(pos, group))
         return;
     group.push_back(pos);
@@ -212,8 +212,8 @@ void LevelSystem::_get_group(Tile type, const sf::Vector2i& pos, const std::vect
         _get_group(type, { pos.x,pos.y - 1 }, tile_list, group, true);
 }
 
-bool LevelSystem::in_group(const sf::Vector2i& pos, const std::vector<sf::Vector2i>& group) {
-    for (const sf::Vector2i& p : group)
+bool LevelSystem::in_group(const sf::Vector2<size_t>& pos, const std::vector<sf::Vector2<size_t>>& group) {
+    for (const sf::Vector2<size_t>& p : group)
         if (p == pos)
             return true;
     return false;

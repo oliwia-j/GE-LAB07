@@ -15,18 +15,18 @@ public:
 	static sf::Color get_color(Tile t);
 	static void set_color(Tile t, sf::Color c);
 	//Get Tile at grid coordinate
-	static Tile get_tile(sf::Vector2i);
+	static Tile get_tile(sf::Vector2<size_t>);
 	//Get Screenspace coordinate of tile
-	static sf::Vector2f get_tile_position(sf::Vector2i);
+	static sf::Vector2f get_tile_position(sf::Vector2<size_t>);
 	//get the tile at screenspace pos
 	static Tile get_tile_at(sf::Vector2f);
 	static int get_height();
 	static int get_width();
 	static sf::Vector2f get_start_position();
-	static std::vector<sf::Vector2i> find_tiles(Tile);
-	static std::vector<sf::Vector2i> get_tiles_list(Tile type);
-	static std::vector<std::vector<sf::Vector2i>> get_groups(Tile type);
-	static bool in_group(const sf::Vector2i& pos, const std::vector<sf::Vector2i>& group);
+	static std::vector<sf::Vector2<size_t>> find_tiles(Tile);
+	static std::vector<sf::Vector2<size_t>> get_tiles_list(Tile type);
+	static std::vector<std::vector<sf::Vector2<size_t>>> get_groups(Tile type);
+	static bool in_group(const sf::Vector2<size_t>& pos, const std::vector<sf::Vector2<size_t>>& group);
 
 protected:
 	static std::unique_ptr<Tile[]> _tiles; //Internal array of tiles
@@ -40,7 +40,7 @@ protected:
 	static std::vector<std::unique_ptr<sf::RectangleShape>> _sprites;
 	//generate the _sprites array
 	static void build_sprites();
-	static void _get_group(Tile type, const sf::Vector2i& pos, const std::vector<sf::Vector2i>& tile_list, std::vector<sf::Vector2i>& group, bool vert);
+	static void _get_group(Tile type, const sf::Vector2<size_t>& pos, const std::vector<sf::Vector2<size_t>>& tile_list, std::vector<sf::Vector2<size_t>>& group, bool vert);
 
 
 
