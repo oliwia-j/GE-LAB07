@@ -46,3 +46,10 @@ add_custom_target(copy_resources ALL COMMAND ${CMAKE_COMMAND}
     ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources
 )
 add_dependencies(lab-06 copy_resources)
+
+# Post-Build step: copy binary box2d file and place it in the same location as executable
+add_custom_command(TARGET lab-06 POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+        "${CMAKE_BINARY_DIR}/lib/box2d/bin/box2dd.dll" # source (generated binary dll file for box2d library)
+        "${CMAKE_BINARY_DIR}/bin/box2dd.dll" # destination (dll library files must be in the same folder as executable)
+)
