@@ -1,4 +1,4 @@
-project(GE-lab-06)
+project(platformer)
 cmake_minimum_required(VERSION 3.11)
 # Require modern C++
 set(CMAKE_CXX_STANDARD 17)
@@ -11,32 +11,36 @@ SET(OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/")
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIRECTORY})
 
 #### Add External Dependencies ####
-# SFML
 add_subdirectory("lib/SFML")
 set(SFML_INCS "lib/SFML/include")
 link_directories("${CMAKE_BINARY_DIR}/lib/SFML/lib")
-# Box2d
+
 add_subdirectory("lib/box2d")
 set(B2D_INCS "lib/box2d/include")
-link_directories("${CMAKE_BINARY_DIR}/lib/box2d/lib")
+link_directories("${CMAKE_BINARY_DIR}/lib/box2d/bin")
+
+#### level system ####
+add_library(tile_level STATIC tile_level_loader/level_system.cpp)
+target_include_directories(tile_level INTERFACE tile_level_loader)
+target_link_libraries(tile_level sfml-graphics)
 
 #### Engine ####
 add_library(engine STATIC engine/game_system.cpp 
                         engine/renderer.cpp 
-                        engine/ecm.cpp)
-target_include_directories(engine INTERFACE engine)
-target_link_libraries(engine sfml-graphics)
+                        engine/ecm.cpp
+                        engine/physics.cpp)
+target_include_directories(engine INTERFACE engine ${SFML_INCS} ${B2D_INCS} tile_level_loader)
+target_link_libraries(engine sfml-graphics box2d tile_level)
 
 #### executable ####
-add_executable(lab-06 
-    main.cpp
+add_executable(platformer 
+    main.cpp 
     scenes.cpp
-    b2d_utils.cpp
-    )
-target_include_directories(lab-06 PRIVATE ${SFML_INCS} ${B2D_INCS} engine)
-target_link_libraries(lab-06 sfml-graphics box2d engine)
-
-set_target_properties(lab-06 
+    graphics_cmps.cpp
+    physics_cmps.cpp)
+target_include_directories(platformer PRIVATE ${SFML_INCS} ${B2D_INCS} engine tile_level_loader)
+target_link_libraries(platformer sfml-graphics box2d engine tile_level)
+set_target_properties(platformer 
     PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY
     ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(Configuration)
 )
@@ -45,11 +49,4 @@ add_custom_target(copy_resources ALL COMMAND ${CMAKE_COMMAND}
     "${PROJECT_SOURCE_DIR}/resources"
     ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources
 )
-add_dependencies(lab-06 copy_resources)
-
-# Post-Build step: copy binary box2d file and place it in the same location as executable
-add_custom_command(TARGET lab-06 POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy
-        "${CMAKE_BINARY_DIR}/lib/box2d/bin/box2dd.dll" # source (generated binary dll file for box2d library)
-        "${CMAKE_BINARY_DIR}/bin/box2dd.dll" # destination (dll library files must be in the same folder as executable)
-)
+add_dependencies(platformer copy_resources)
