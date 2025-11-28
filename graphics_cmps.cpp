@@ -1,6 +1,7 @@
-#include "game_parameters.hpp"
 #include "graphics_cmps.hpp"
 #include "renderer.hpp"
+#define _USE_MATH_DEFINES // for C++
+#include <math.h>
 
 void ShapeComponent::update(const float& dt) {
     _shape->setPosition(_parent->get_position());

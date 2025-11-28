@@ -1,7 +1,6 @@
 #pragma once
 #include <box2d/box2d.h>
 #include <SFML/Graphics.hpp>
-#include "level_system.hpp"
 
 class Physics {
 public:

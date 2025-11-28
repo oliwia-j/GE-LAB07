@@ -1,7 +1,5 @@
 #include "physics.hpp"
 
-using ls = LevelSystem;
-
 b2WorldId Physics::_world_id;
 
 void Physics::initialise() {

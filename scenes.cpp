@@ -1,21 +1,24 @@
-#include <iostream>
+#include <random>
 #include "scenes.hpp"
-#include "level_system.hpp"
 #include "renderer.hpp"
-#include "game_parameters.hpp"
 #include "graphics_cmps.hpp"
-#include "physics_cmps.hpp"
+#include "ctrl_cmps.hpp"
+#include "ai_cmps.hpp"
+#include "game_parameters.hpp"
 
-using ls = LevelSystem;
-using param = Parameters;
+
 using gs = GameSystem;
+using param = Parameters;
 
 std::shared_ptr<Scene> Scenes::menu;
-std::shared_ptr<Scene> Scenes::level;
+std::shared_ptr<Scene> Scenes::steering;
 
 void MenuScene::update(const float& dt) {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
-        gs::set_active_scene(Scenes::level);
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
+        gs::set_active_scene(Scenes::steering);
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
+
     }
     Scene::update(dt);
 }
@@ -29,56 +32,46 @@ void MenuScene::load() {
     _font.loadFromFile("resources/fonts/RobotoMono-Regular.ttf");
     _text.setFont(_font);
     _text.setCharacterSize(60);
-    _text.setString("Platformer Test\n Press Space to start");
+    _text.setString("Movement Demos\nPress 1 for Steering\nPress 2 for Pathfinding");
 }
 
 void MenuScene::unload() {}
 
-void LevelScene::load() {
-    _load_level(param::level_1);
-}
 
-void LevelScene::_load_level(const std::string& file_path) {
-    ls::load_level(file_path, param::tile_size);
+void SteeringScene::load() {
+    std::shared_ptr<Entity> player = make_entity();
+    player->set_position(sf::Vector2f(param::game_width / 2,
+        param::game_height / 2));
+    std::shared_ptr<ShapeComponent> s = player->add_component<ShapeComponent>();
+    s->set_shape<sf::CircleShape>(10.0f);
+    s->get_shape().setFillColor(sf::Color::Red);
+    player->add_component<KeyboardMovementComponent>();
 
-
-    _player = make_entity();
-    _player->set_position(ls::get_start_position());
-
-    std::shared_ptr<ShapeComponent> shape = _player->add_component<ShapeComponent>();
-    shape->set_shape<sf::RectangleShape>(sf::Vector2f(param::player_size[0], param::player_size[1]));
-    shape->get_shape().setFillColor(sf::Color::Yellow);
-    shape->get_shape().setOrigin(sf::Vector2f(param::player_size[0] / 2.f, param::player_size[1] / 2.f));
-    std::shared_ptr<PlayerPhysicsComponent> cmp = _player->add_component<PlayerPhysicsComponent>(sf::Vector2f(param::player_size[0], param::player_size[1]));
-    cmp->create_capsule_shape(sf::Vector2f(param::player_size[0], param::player_size[1]),
-        param::player_weight, param::player_friction, param::player_restitution);
-
-    std::vector<std::vector<sf::Vector2i>> wall_groups = ls::get_groups(ls::WALL);
-    for (const std::vector<sf::Vector2i>& walls : wall_groups) {
-        _walls.push_back(make_entity());
-        _walls.back()->add_component<PlatformComponent>(walls);
+    // Setup C++ random number generation
+    std::random_device dev;
+    std::default_random_engine engine(dev());
+    std::uniform_real_distribution<float> x_dist(0.0f,
+        param::game_width);
+    std::uniform_real_distribution<float> y_dist(0.0f,
+        param::game_height);
+    for (size_t n = 0; n < 100; ++n) {
+        std::shared_ptr<Entity> enemy = make_entity();
+        enemy->set_position(sf::Vector2f(x_dist(engine), y_dist(engine)));
+        std::shared_ptr<ShapeComponent> s = enemy->add_component<ShapeComponent>();
+        s->set_shape<sf::RectangleShape>(sf::Vector2f(10.0f, 10.0f));
+        s->get_shape().setFillColor(sf::Color::Blue);
+        enemy->add_component<SteeringComponent>(player.get(), 50.f);
     }
-
 }
 
-void LevelScene::update(const float& dt) {
-    Scene::update(dt);
-    _entities.update(dt);
-    if (ls::get_tile_at(_player->get_position()) == ls::END) {
-        unload();
-        _load_level(param::level_2);
-    }
-
-}
-
-void LevelScene::render() {
-    ls::render(Renderer::get_window());
-    Scene::render();
-    _entities.render();
-}
-
-void LevelScene::unload() {
+void SteeringScene::unload() {
     Scene::unload();
-    _player.reset();
-    _walls.clear();
+}
+
+void SteeringScene::update(const float& dt) {
+    Scene::update(dt);
+}
+
+void SteeringScene::render() {
+    Scene::render();
 }
