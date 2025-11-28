@@ -101,7 +101,7 @@ void PlatformComponent::_create_chain_shape(const std::vector<sf::Vector2i>& til
 }
 
 void PhysicsComponent::update(const float& dt) {
-    std::cout << dt << std::endl;
+    //std::cout << dt << std::endl;
     _parent->set_position(ph::invert_height(ph::bv2_to_sv2(b2Body_GetPosition(_body_id)),
         param::game_height));
     _parent->set_rotation((180 / M_PI) * b2Rot_GetAngle(b2Body_GetRotation(_body_id)));
